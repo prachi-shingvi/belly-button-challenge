@@ -11,6 +11,12 @@ const barLayout = {
     }
 };
 
+const bubblelayout = {
+    xaxis:{title:{text:'OTU ID'}},
+    height:750,
+    width:1500,
+}
+
 // Function to set data from given id
 function setData(id){
     const id_info = samples.filter(function(item){
@@ -48,10 +54,36 @@ function setDemoInfo(id){
 
 }
 
+// function for BubbleChart
+function BubbleChart(id){
+    const id_info = samples.filter(function(item){
+        return item['id']==id;
+    })[0]
+    let xaxis=id_info['otu_ids'];
+    let yaxis=id_info['sample_values'];
+    let markers=id_info['sample_values'];
+    let colors=id_info['otu_ids'];
+    let labels=id_info['otu_labels'];
+
+    let trace={
+        x:xaxis,
+        y:yaxis,
+        text:labels,
+        mode:'markers',
+        marker:{
+            size:markers,
+            color:colors,
+            colorscale:"Earth"
+        }
+    }
+
+    drawBubblePlot(trace);
+}
 // On change function which is called when id is selected from drop down
 function optionChanged(id_value){
     setData(id_value);
     setDemoInfo(id_value);
+    BubbleChart(id_value);
 }
 
 // Initial function to run
@@ -80,6 +112,7 @@ function init() {
         // Initial graph to set when web page loads
         setData(samples[0]['id'])
         setDemoInfo(samples[0]['id'])
+        BubbleChart(samples[0]['id'])
     });
 }
 
@@ -87,6 +120,10 @@ function init() {
 // Function to draw bar chart with given trace data
 function drawBarPlot(newdata) {
     Plotly.newPlot("bar", [newdata], barLayout);
+}
+
+function drawBubblePlot(newdata){
+    Plotly.newPlot("bubble",[newdata],bubblelayout);
 }
 
 init();
